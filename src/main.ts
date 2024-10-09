@@ -1,4 +1,6 @@
-import { App, Editor, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { App, Editor, TFile, MarkdownView, Modal, Notice, Plugin, PluginSettingTab, Setting } from 'obsidian';
+import { ClassRelationMapSettings } from './settings.js'
+import { ClassRelationView, VIEW_TYPE_CRV } from './ClassRelationView';
 
 // Remember to rename these classes and interfaces!
 
@@ -15,6 +17,19 @@ export default class MyPlugin extends Plugin {
 
 	async onload() {
 		await this.loadSettings();
+
+		this.registerView(
+			VIEW_TYPE_CRV,
+			(leaf) => new ClassRelationView(leaf)
+		);
+
+		this.addCommand({
+			id: 'open-class-relation-view',
+			name: 'Open Class Relation View',
+			callback: () => {
+				this.activateView();
+			}
+		})
 
 		// This creates an icon in the left ribbon.
 		const ribbonIconEl = this.addRibbonIcon('dice', 'Sample Plugin', (evt: MouseEvent) => {
@@ -76,6 +91,36 @@ export default class MyPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
+
+
+		this.app.workspace.on('active-leaf-change', async () => {
+			const file = this.app.workspace.getActiveFile();
+			if(file){
+				const content = await this.app.vault.read(file);
+				console.log(content);
+
+				// var contentEL: HTMLElement;
+				// contentEL = document.createElement('div');
+				// contentEL.style.position = "relative";
+				// contentEL.style.width = "100%";
+				// contentEL.style.height = "100%";
+				// contentEL.addClass("")
+				// var draw : any;
+				// draw = SVG(contentEL).size('100%', '100%');
+
+				// var edgeGroup = draw.group();
+				// var svgDom = edgeGroup.group();
+				// svgDom.clear();
+
+				// var line1 = svgDom.path().stroke({
+				// 	color: '#333',
+				// 	width: 10,
+				// 	linecap: 'round',
+				// 	linejoin: 'round'
+				// }).fill('none');
+				// line1.plot('M0 0 H50 A20 20 0 1 0 100 50 v25 C50 125 0 85 0 85 z');
+			}
+		})
 	}
 
 	onunload() {
@@ -89,7 +134,15 @@ export default class MyPlugin extends Plugin {
 	async saveSettings() {
 		await this.saveData(this.settings);
 	}
+
+	async activateView() {
+		const leaf = this.app.workspace.getLeaf(true);
+		await leaf.setViewState({ type: VIEW_TYPE_CRV });
+		this.app.workspace.revealLeaf(leaf);
+	}
 }
+
+
 
 class SampleModal extends Modal {
 	constructor(app: App) {
