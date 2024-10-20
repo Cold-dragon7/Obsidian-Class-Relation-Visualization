@@ -91,36 +91,6 @@ export default class MyPlugin extends Plugin {
 
 		// When registering intervals, this function will automatically clear the interval when the plugin is disabled.
 		this.registerInterval(window.setInterval(() => console.log('setInterval'), 5 * 60 * 1000));
-
-
-		this.app.workspace.on('active-leaf-change', async () => {
-			const file = this.app.workspace.getActiveFile();
-			if(file){
-				const content = await this.app.vault.read(file);
-				console.log(content);
-
-				// var contentEL: HTMLElement;
-				// contentEL = document.createElement('div');
-				// contentEL.style.position = "relative";
-				// contentEL.style.width = "100%";
-				// contentEL.style.height = "100%";
-				// contentEL.addClass("")
-				// var draw : any;
-				// draw = SVG(contentEL).size('100%', '100%');
-
-				// var edgeGroup = draw.group();
-				// var svgDom = edgeGroup.group();
-				// svgDom.clear();
-
-				// var line1 = svgDom.path().stroke({
-				// 	color: '#333',
-				// 	width: 10,
-				// 	linecap: 'round',
-				// 	linejoin: 'round'
-				// }).fill('none');
-				// line1.plot('M0 0 H50 A20 20 0 1 0 100 50 v25 C50 125 0 85 0 85 z');
-			}
-		})
 	}
 
 	onunload() {
