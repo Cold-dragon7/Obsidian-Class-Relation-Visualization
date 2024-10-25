@@ -1,7 +1,7 @@
 {
 	"id": "class-relation-visualization",
 	"name": "Class Relation Visualization",
-	"version": "1.0.0",
+	"version": "0.0.1",
 	"minAppVersion": "0.15.0",
 	"description": "Watch how beautiful your class relation is",
 	"author": "Yong",
