@@ -12,7 +12,8 @@ export class Node {
     comment : string = "";
     tag : string = "";
 
-    rect : Rect;
+    x : number = 0;
+    y : number = 0;
     connector : ConnectorArray = ["", "", "", "", "", "", "", "", "", ""];     // 위 5, 아래 5개씩. 연결되는 노드 이름 저장
     
     constructor(className : string, inheritance : string[], composition : string[], 

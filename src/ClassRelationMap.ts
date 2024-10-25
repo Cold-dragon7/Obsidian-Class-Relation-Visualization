@@ -1,5 +1,8 @@
-import SVG from 'svg.js'
+import SVG, { svgjs } from 'svg.js'
 import { Node, Connection } from './elements'
+
+const nodeWidth : number = 300;
+const nodeHeight : number = 50;
 
 // interface Setting {
 //     theme?: string;
@@ -15,11 +18,14 @@ import { Node, Connection } from './elements'
 // }
 
 export default class ClassRelationMap {
-    
     SVGContainer : SVG.Doc;
     nodeContainer : Node[] = [];
+    connectionContainer : Connection[] = [];
     parentNodes : string[] = [];
     ownerNodes : string[] = [];
+
+    mapWidth : number = 0;
+    mapHeight : number = 0;
 
     constructor(SVGContainer : SVG.Doc) {
         this.SVGContainer = SVGContainer;
@@ -60,29 +66,91 @@ export default class ClassRelationMap {
         });
     }
 
+    positionNode() {
+        // map 크기 설정
+        this.mapWidth = this.nodeContainer.length * 1000;
+        this.mapHeight = this.nodeContainer.length * 800;
+
+        // 1. 부모-자식 노드 배치
+        if(this.parentNodes.length > 0) {
+            const parentBand = this.mapHeight / 3;
+
+        }
+
+        // 2. Owner 노드 배치
+        if(this.ownerNodes.length > 0) {
+            const ownerBand = this.mapHeight / 3 * 2;
+
+        }
+
+        // 3. 일반 노드 배치
+        var Xindex = 200;
+        var Yindex = 200;
+
+        this.nodeContainer.forEach(node => {
+            if(Xindex > 1200) {
+                Xindex = 200;
+                Yindex += 200;
+            }
+            this.tryPosition(node, Xindex, Yindex);
+            Xindex += 400;
+        });
+
+
+    }
+
+    tryPosition(node : Node, x : number, y : number) : boolean{
+        // Y축 지그재그 검사 할까 말까
+        
+        // map 안에 들어오는지 검사
+        if(x < nodeWidth || x > this.mapWidth - nodeWidth || 
+            y < nodeHeight || y > this.mapHeight - nodeHeight) {
+            return false;
+        }
+
+        // 다른 노드가 존재하는지 검사
+        this.nodeContainer.forEach(node => {
+            if(node.x == x || node.y == y)
+                return false;
+        });
+
+        node.x = x; node.y = y;
+        return true;
+    }
+
+    getMapSize() : [number, number] {
+        return [this.mapWidth, this.mapHeight]
+    }
+
     drawSVG() {
 		console.log("drawSVG() start");
 
-        const svgNamespace = 'http://www.w3.org/2000/svg';
+        this.nodeContainer.forEach(node => {
+            this.drawNode(node.className, node.x, node.y);
+        });
         
-        // SVG 요소 생성
-        const svg = document.createElementNS(svgNamespace, 'svg');
-        svg.setAttribute('width', '200');
-        svg.setAttribute('height', '200');
 
-        // 도형 추가 (예: 원)
-        const circle = document.createElementNS(svgNamespace, 'circle');
-        circle.setAttribute('cx', '100');
-        circle.setAttribute('cy', '100');
-        circle.setAttribute('r', '80');
-        circle.setAttribute('fill', 'blue');
 
-        // SVG에 도형 추가
-        svg.appendChild(circle);
 
-        // Obsidian의 특정 DOM 요소에 SVG 추가
-        // this.contentEL.appendChild(svg);
+
 
 		console.log("drawSVG() end");
+    }
+
+    drawNode(className : string, x : number, y : number) {
+        const nodeGroup: SVG.G = this.SVGContainer.group();
+
+        const rect = nodeGroup.rect(nodeWidth, nodeHeight)
+            .move(x, y)
+            .fill('#87CEEB')
+            .stroke({ color: 'black', width: 2 })
+            .radius(10);
+
+        const text = nodeGroup.text(className)
+            .font({size: 18, family: 'Arial'})
+            .fill('blue')
+            .attr({ 'text-anchor': 'start', 'alignment-baseline': 'middle' });
+            
+        text.cx(rect.cx()).cy(rect.cy());
     }
 }

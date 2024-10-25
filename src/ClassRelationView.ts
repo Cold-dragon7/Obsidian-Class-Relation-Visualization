@@ -32,8 +32,13 @@ export class ClassRelationView extends ItemView {
         const SVGContainer = this.createSVGContainer(this.divID);
         this.classRelationMap = new ClassRelationMap(SVGContainer);
 
-        this.makeFile2Node();
+        await this.makeFile2Node();
 
+        this.classRelationMap.positionNode();
+        var mapSize = this.classRelationMap.getMapSize();
+        SVGContainer.size(mapSize[0], mapSize[1]);
+        
+        this.classRelationMap.drawSVG();
 
         // test용 코드
         // SVGContainer.circle(100).fill('blue').center(150, 150);
@@ -55,12 +60,13 @@ export class ClassRelationView extends ItemView {
 
     createSVGContainer(divId : string) : SVG.Doc{
         this.contentEl.createDiv({ attr: { id: divId } });
-        const container = SVG(divId).size(1000, 1000);
+        const container = SVG(divId).size(10000, 10000);
         return container;
     }
 
     async makeFile2Node() {
-        const MDFiles = this.app.vault.getMarkdownFiles();
+        var MDFiles = this.app.vault.getMarkdownFiles();
+        MDFiles = MDFiles.slice(0,10);
        // MDFiles.forEach(async file => {
        for(const file of MDFiles) {
             var className = file.basename;
@@ -105,5 +111,7 @@ export class ClassRelationView extends ItemView {
         }
         if(this.classRelationMap != null)
             this.classRelationMap.calculOwner();
+
+        console.log(this.classRelationMap?.nodeContainer.length);
     }
 }
