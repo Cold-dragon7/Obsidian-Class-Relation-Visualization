@@ -29,17 +29,19 @@ export class ClassRelationView extends ItemView {
         super.onOpen();
 
         this.contentEl.empty(); // 이전 내용 제거
-        const SVGContainer = this.createSVGContainer(this.divID);
-        this.classRelationMap = new ClassRelationMap(SVGContainer);
+        let temp = this.createSVGContainer(this.divID);
+        if(temp) {
+            const SVGContainer = temp;
+            this.classRelationMap = new ClassRelationMap(SVGContainer);
 
-        await this.makeFile2Node();
+            await this.makeFile2Node();
 
-        this.classRelationMap.positionNode();
-        var mapSize = this.classRelationMap.getMapSize();
-        SVGContainer.size(mapSize[0], mapSize[1]);
-        
-        this.classRelationMap.drawSVG();
-
+            this.classRelationMap.positionNode();
+            //var mapSize = this.classRelationMap.getMapSize();
+            SVGContainer.size(6000, 6000);
+            
+            this.classRelationMap.drawSVG();
+        }
         // test용 코드
         // SVGContainer.circle(100).fill('blue').center(150, 150);
         // var text = SVGContainer.text("text").center(200, 200).fill('white');
@@ -58,15 +60,22 @@ export class ClassRelationView extends ItemView {
         // 뷰가 닫힐 때 실행할 작업이 있으면 여기서 처리합니다.
     }
 
-    createSVGContainer(divId : string) : SVG.Doc{
+    createSVGContainer(divId : string) : SVG.Doc|null {
+        let container : SVG.Doc|null = null;
         this.contentEl.createDiv({ attr: { id: divId } });
-        const container = SVG(divId).size(10000, 10000);
+        const targetDiv = this.contentEl.querySelector(`#${divId}`) as HTMLElement;  // DOM 요소가 정상적으로 등록되었는지 확인
+        if(targetDiv) {
+            container = SVG(targetDiv).size(6000, 6000);
+        }
+        else {
+            console.log("웨않되ㅣㅣㅣ");
+        }
         return container;
     }
 
     async makeFile2Node() {
         var MDFiles = this.app.vault.getMarkdownFiles();
-        MDFiles = MDFiles.slice(0,10);
+        //MDFiles = MDFiles.slice(0,50);
        // MDFiles.forEach(async file => {
        for(const file of MDFiles) {
             var className = file.basename;
@@ -81,9 +90,9 @@ export class ClassRelationView extends ItemView {
                 var relationArr = ['상', '합', '집'];
                 if(relationArr.includes(char)) {
                     var rawstr = line.slice(8);
-                    var matches = rawstr.match(/\[\[(.*?)\]\]/g);
+                    var matches = rawstr.match(/\[\[(.*?)\]\]/g);       // 대괄호 안의 내용을 찾기
                     if(matches != null) {
-                        var values = matches.map(match => match.replace(/\[\[|\]\]/g, ''));
+                        var values = matches.map(match => match.replace(/\[\[|\]\]/g, ''));     // 대괄호 제거
                         if(char == '상')
                             inheritance = values;
                         else if(char == '합')
@@ -109,8 +118,11 @@ export class ClassRelationView extends ItemView {
             if(this.classRelationMap != null)
                 this.classRelationMap.createNode(className, inheritance, composition, aggregation, comment, tag);
         }
-        if(this.classRelationMap != null)
+        if(this.classRelationMap != null) {
+            this.classRelationMap.nodeContainer.sort((a, b)=> a.className.localeCompare(b.className));  // 사전순 정렬
+            this.classRelationMap.calculParent();
             this.classRelationMap.calculOwner();
+        }
 
         console.log(this.classRelationMap?.nodeContainer.length);
     }
