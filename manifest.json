@@ -1,11 +1,10 @@
 {
 	"id": "class-relation-visualization",
 	"name": "Class Relation Visualization",
-	"version": "1.0.0",
+	"version": "0.5.0",
 	"minAppVersion": "0.15.0",
 	"description": "Class relation expression test",
 	"author": "Yong",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"authorUrl": "https://github.com/Cold-dragon7",
 	"isDesktopOnly": false
 }
