@@ -167,7 +167,7 @@ export default class ClassRelationMap {
             }
         });
 
-        // 4. 어디에도 포함되지 않는 노드 배치 (그렇다고 사용하지 않는 건 아님)
+        // 4. 어디에도 포함되지 않는 노드 배치 (그렇다고 꼭 사용하지 않는 건 아님)
         this.forDebug = true;//debug
         let Ybegin = Yindex;
         this.remainNodeContainer.forEach(targetNode=> {
@@ -337,10 +337,17 @@ export default class ClassRelationMap {
                 }
             })
 
+            node.composition.forEach(dstName=> {
+                let dstNode = this.findNode(dstName);
+                if(dstNode) {
+                    this.drawContainment(node, dstNode, 1);
+                }
+            })
+
             node.aggregation.forEach(dstName=> {
                 let dstNode = this.findNode(dstName);
                 if(dstNode) {
-                    this.drawArrow(node, dstNode);
+                    this.drawContainment(node, dstNode, 2);
                 }
             })
         });
@@ -396,6 +403,7 @@ export default class ClassRelationMap {
             .attr({ 'text-anchor': 'start', 'alignment-baseline': 'middle' });
             
         text.cx(rect.cx()).cy(rect.cy());
+        nodeGroup;
     }
 
     drawInheritance(srcNode: Node, dstNode: Node) {
@@ -456,7 +464,7 @@ export default class ClassRelationMap {
         this.SVGContainer.polyline(points).fill('none').stroke({ width: 2, color: 'gray' }).back();
     }
 
-    drawArrow(srcNode: Node, dstNode: Node) {
+    drawContainment(srcNode: Node, dstNode: Node, type: number) {
         let [srcX, srcY] = this.calCoordinates(srcNode.x, srcNode.y);
         let [dstX, dstY] = this.calCoordinates(dstNode.x, dstNode.y);
 
@@ -467,14 +475,14 @@ export default class ClassRelationMap {
         const centerY2 = dstY + nodeHeight / 2;
       
         // 2. 두 점 사이의 각도 계산
-        const angle = Math.atan2(centerY2 - centerY1, centerX2 - centerX1);
+        const angle = Math.atan2(centerY1 - centerY2, centerX1 - centerX2);
       
         // 3. 목적지 노드의 경계 좌표 계산
-        const destinationX = centerX2 - (nodeWidth / 2) * Math.cos(angle);
-        const destinationY = centerY2 - (nodeHeight / 2) * Math.sin(angle);
+        const destinationX = centerX1 - (nodeWidth / 2) * Math.cos(angle);
+        const destinationY = centerY1 - (nodeHeight / 2) * Math.sin(angle);
       
         // 4. 선 그리기 (출발점 중심에서 목적지 노드 경계까지)
-        this.SVGContainer.line(centerX1, centerY1, destinationX, destinationY).stroke({ width: 1, color: 'gray' }).back();
+        this.SVGContainer.line(destinationX, destinationY, centerX2, centerY2).stroke({ width: 1, color: 'gray' }).back();
       
         // 5. 마름모 그리기
         const edgeLength = 15;  // 한 변의 길이
@@ -492,6 +500,6 @@ export default class ClassRelationMap {
 
         // 마름모 모양을 polygon으로 그리기
         this.SVGContainer.polygon(`${topX},${topY} ${destinationX},${destinationY} ${bottomX},${bottomY} ${topX - diffX},${topY - diffY}`)
-            .fill('gray').back();
+            .fill((type == 1)? 'white' : 'gray').back();
     }
 }
