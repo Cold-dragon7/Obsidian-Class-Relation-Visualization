@@ -108,7 +108,6 @@ export default class ClassRelationMap {
     positionNode() {
         // index (map 크기) 설정
         [this.rows, this.columns] = this.calculGrid(this.nodeContainer.length);
-        console.log("rows:"+this.rows + "   columns:"+this.columns + "   부모:"+this.parentNodes.length +"   owner: "+ this.ownerNodes.length);
 
         let Xindex = 1;
         let Yindex = 1;
@@ -129,7 +128,6 @@ export default class ClassRelationMap {
                 }
                 if(useInterval) Xindex += 3;
                 if(Xindex >= this.rows) {Xindex = 1; Yindex += 4;}
-                if(Yindex >= this.columns) console.log("grid 크기 부족");
             });
         }
         
@@ -150,7 +148,6 @@ export default class ClassRelationMap {
                 }
                 if(useInterval) Xindex += 3;
                 if(Xindex >= this.rows) {Xindex = 1; Yindex += 4;}
-                if(Yindex >= this.columns) console.log("grid 크기 부족");
             })
         }
 
@@ -177,14 +174,7 @@ export default class ClassRelationMap {
             // 마지막은 X/Y 증감을 반대로 하고 싶었음..
             Yindex += 1;
             if(Yindex >= this.columns) {Yindex = Ybegin; Xindex += 1;}
-            if(Xindex >= this.rows) console.log("grid 크기 부족");
         })
-
-
-
-        let debugstr = "미배치 노드: ";
-        for(const remainNode of this.remainNodeContainer) {debugstr += remainNode.className + ", "}
-        console.log(debugstr);
     }
 
     positionCentralNode(parentNode:Node, Xindex:number, Yindex:number) {
@@ -286,19 +276,16 @@ export default class ClassRelationMap {
     tryPosition(node:Node, x:number, y:number) : boolean{
         // index 범위 검사
         if(x < (y%2==1? 1:0) || x > this.rows || y < 0 || y > this.columns) {
-            if(this.forDebug) console.log("범위 out: "+ node.className +", "+ x +", "+ y);
             return false;
         }
         
         // 다른 노드가 존재하는지 검사
         for(const refNode of this.nodeContainer) {
             if(refNode.x == x && refNode.y == y) {
-                if(this.forDebug) console.log("다른 노드 존재: "+ node.className +", "+ x +", "+ y);
                 return false;
             }
         }
         
-        if(this.forDebug) console.log("노드 배치 성공: "+ node.className +", "+ x +", "+ y);
         node.x = x; node.y = y;
         return true;
     }
@@ -325,8 +312,6 @@ export default class ClassRelationMap {
     // }
 
     drawSVG() {
-		console.log("drawSVG() start");
-
         this.nodeContainer.forEach(node => {
             this.drawNode(node);
 
@@ -351,13 +336,6 @@ export default class ClassRelationMap {
                 }
             })
         });
-        
-
-
-
-
-
-		console.log("drawSVG() end");
     }
 
     calCoordinates(x:number, y:number) : [number, number] {
