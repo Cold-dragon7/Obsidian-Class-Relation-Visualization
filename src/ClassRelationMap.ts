@@ -1,4 +1,4 @@
-import SVG, { svgjs } from 'svg.js'
+import SVG from 'svg.js'
 import { Node } from './elements'
 
 const nodeWidth : number = 150;
@@ -14,19 +14,6 @@ const directions = [
     { dx: 0, dy: 1 },   // 하
 ];
 
-// interface Setting {
-//     theme?: string;
-//     canvasSize?: number;
-//     background?: string;
-//     fontSize?: number;
-//     color?: string,
-//     exportMdModel?: string,
-//     headLevel: number,
-//     layoutDirect: string,
-//     strokeArray?:any[],
-//     focusOnMove?: boolean
-// }
-
 export default class ClassRelationMap {
     SVGContainer : SVG.Doc;
     nodeContainer : Node[] = [];
@@ -37,21 +24,20 @@ export default class ClassRelationMap {
     rows : number = 0;
     columns : number = 0;
 
+    mouseHoverTimeout : number | null = null;
+    isTimeoutCompleted : boolean = false;
+    classCommentGroup : SVG.G;
+
     forDebug : boolean = false;
 
     constructor(SVGContainer : SVG.Doc) {
         this.SVGContainer = SVGContainer;
-    }
 
-    // setAppSetting() {
-    //     this.appEl.style.width = `${this.setting.canvasSize}px`;
-    //     this.appEl.style.height = `${this.setting.canvasSize}px`;
-    //     this.contentEL.style.width = `100%`;
-    //     this.contentEL.style.height = `100%`;
-    //     //  this.contentEL.style.color=`${this.setting.color};`;
-    //     this.contentEL.style.background = `${this.setting.background}`;
-    //     this.contentEL.style.fontSize = `${this.setting.fontSize}px`;
-    // }
+        this.classCommentGroup = this.SVGContainer.group();
+        this.classCommentGroup.rect(intervalWidth*3, intervalHeight).cx(0).y(-5).fill('black').opacity(0.75).id('comment-rect');
+        this.classCommentGroup.text('').fill('white').size(12).cx(0).y(0).id('comment-text');
+        this.classCommentGroup.hide();
+    }
 
     createNode(className : string, inheritance : string[], composition : string[], 
         aggregation : string[], comment : string, tag : string) {
@@ -307,10 +293,6 @@ export default class ClassRelationMap {
         return [x, y];
     }
 
-    // getMapSize() : [number, number] {
-    //     return [this.mapWidth, this.mapHeight]
-    // }
-
     drawSVG() {
         this.nodeContainer.forEach(node => {
             this.drawNode(node);
@@ -381,7 +363,57 @@ export default class ClassRelationMap {
             .attr({ 'text-anchor': 'start', 'alignment-baseline': 'middle' });
             
         text.cx(rect.cx()).cy(rect.cy());
-        nodeGroup;
+
+        // 마우스 이벤트 등록
+        nodeGroup.id(node.className)
+        .on('mouseenter', (event : MouseEvent) => {
+            const target = event.target as SVGElement;
+            this.isTimeoutCompleted = false;
+
+            this.mouseHoverTimeout = window.setTimeout(() => {
+                console.log('1초: ', target.id);
+                this.addClassComment(target.id, x, y);
+                this.isTimeoutCompleted = true;
+            }, 1000);
+        })
+        .on('mouseleave', (event : MouseEvent) => {
+            const target = event.target as SVGElement;
+            if(this.mouseHoverTimeout !== null)
+                clearTimeout(this.mouseHoverTimeout);
+            this.mouseHoverTimeout = null;
+            this.classCommentGroup.hide();
+        });
+    }
+
+    addClassComment(className: string, nodeX: number, nodeY: number) {
+        let node = this.findNode(className);
+        if(!node)   return;
+        else {
+            let comment = node.comment;
+            this.classCommentGroup.children().forEach(element => {
+
+                if(element.id() == 'comment-rect') {
+                    const commentRect = element as SVG.Rect;
+                    let [width, height] = this.calculCommentRectWidth(comment);
+                    commentRect.width(width).height(height).cx(0);
+                }
+
+                if(element.id() == 'comment-text') {
+                    const commentText = element as SVG.Text;
+                    commentText.text(comment).cx(0);
+                }
+            });
+            this.classCommentGroup.show().move(nodeX + nodeWidth/2, nodeY + nodeHeight*1.1);
+        }
+    }
+
+    calculCommentRectWidth(commentText: string) : [number, number] {
+        let maxLineLength = 0;
+        let lines = commentText.split('\n');
+        lines.forEach(line=> {
+            maxLineLength = maxLineLength >= line.length ? maxLineLength : line.length;
+        })
+        return [maxLineLength * 10 + 20, lines.length * 15 + 15];
     }
 
     drawInheritance(srcNode: Node, dstNode: Node) {
@@ -459,9 +491,6 @@ export default class ClassRelationMap {
         const destinationX = centerX1 - (nodeWidth / 2) * Math.cos(angle);
         const destinationY = centerY1 - (nodeHeight / 2) * Math.sin(angle);
       
-        // 4. 선 그리기 (출발점 중심에서 목적지 노드 경계까지)
-        this.SVGContainer.line(destinationX, destinationY, centerX2, centerY2).stroke({ width: 1, color: 'gray' }).back();
-      
         // 5. 마름모 그리기
         const edgeLength = 15;  // 한 변의 길이
         const diamondAngle = Math.PI / 6;  // 마름모의 각도 (30도)
@@ -479,5 +508,8 @@ export default class ClassRelationMap {
         // 마름모 모양을 polygon으로 그리기
         this.SVGContainer.polygon(`${topX},${topY} ${destinationX},${destinationY} ${bottomX},${bottomY} ${topX - diffX},${topY - diffY}`)
             .fill((type == 1)? 'white' : 'gray').back();
+            
+        // 4. 선 그리기 (출발점 중심에서 목적지 노드 경계까지)
+        this.SVGContainer.line(destinationX, destinationY, centerX2, centerY2).stroke({ width: 1, color: 'gray' }).back();
     }
 }
