@@ -485,7 +485,7 @@ export default class ClassRelationMap {
         group.polyline(points).fill('none').stroke({ width: 2, color: 'gray' });
       
         // 6. 화살표 그리기
-        const arrowLength = 15;  // 화살표의 길이
+        const arrowLength = 14;  // 화살표의 길이
         const arrowAngle = Math.PI / 6;  // 화살표 각도 (30도)
       
         // 화살표 왼쪽 날개 좌표 계산
@@ -526,7 +526,7 @@ export default class ClassRelationMap {
         group.line(destinationX, destinationY, centerX2, centerY2).stroke({ width: 1, color: 'gray' });
 
         // 5. 마름모 그리기
-        const edgeLength = 15;  // 한 변의 길이
+        const edgeLength = 12;  // 한 변의 길이
         const diamondAngle = Math.PI / 6;  // 마름모의 각도 (30도)
 
         // 마름모의 꼭짓점 좌표 계산
