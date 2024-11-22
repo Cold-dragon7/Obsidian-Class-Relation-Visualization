@@ -34,8 +34,8 @@ export default class ClassRelationMap {
         this.SVGContainer = SVGContainer;
 
         this.classCommentGroup = this.SVGContainer.group();
-        this.classCommentGroup.rect(intervalWidth*3, intervalHeight).cx(0).y(-5).fill('black').opacity(0.75).id('comment-rect');
-        this.classCommentGroup.text('').fill('white').size(12).cx(0).y(0).id('comment-text');
+        this.classCommentGroup.rect(intervalWidth*3, intervalHeight).cx(0).y(-5).attr('style', 'fill: var(--color-base-30)').opacity(0.75).id('comment-rect');
+        this.classCommentGroup.text('').attr('style', 'fill: var(--text-normal)').size(12).cx(0).y(0).id('comment-text');
         this.classCommentGroup.id('comment').hide();
     }
 
@@ -339,8 +339,11 @@ export default class ClassRelationMap {
 
         const rect = nodeGroup.rect(nodeWidth, nodeHeight)
             .move(x, y)
-            .fill('#87CEEB')
-            .stroke({ color: 'black', width: 2 })
+            .attr('style', `
+                fill: var(--color-base-40);
+                stroke: var(--color-base-60);
+                stroke-width: 2;
+                `)
             .radius(10);
 
         let nameStr = node.className;
@@ -359,7 +362,7 @@ export default class ClassRelationMap {
 
         const text = nodeGroup.text(nameStr)
             .font({size: 12, family: 'Arial'})
-            .fill('blue')
+            .attr('style', 'fill: var(--text-normal);')
             .attr({ 'text-anchor': 'start', 'alignment-baseline': 'middle' });
             
         text.cx(rect.cx()).cy(rect.cy());
@@ -482,7 +485,11 @@ export default class ClassRelationMap {
         points.push([destinationX, destinationY]);
 
         // 5. 꺾은선 그리기 (출발점 중심에서 목적지 노드 경계까지)
-        group.polyline(points).fill('none').stroke({ width: 2, color: 'gray' });
+        group.polyline(points).attr('style', `
+            fill: transparent;
+            stroke: var(--color-base-60);
+            stroke-width: 2;
+            `);
       
         // 6. 화살표 그리기
         const arrowLength = 14;  // 화살표의 길이
@@ -498,7 +505,11 @@ export default class ClassRelationMap {
       
         // 화살표 모양을 polygon으로 그리기
         group.polygon(`${destinationX},${destinationY} ${arrowLeftX},${arrowLeftY} ${arrowRightX},${arrowRightY}`)
-            .stroke('gray').fill('white');
+        .attr('style', `
+            fill: var(--color-base-00);
+            stroke: var(--color-base-60);
+            stroke-width: 2;
+            `);
         
         // 관계된 노드 이름 저장
         group.attr('data-src', srcNode.className).attr('data-dst', dstNode.className).back();
@@ -523,7 +534,11 @@ export default class ClassRelationMap {
         const destinationY = centerY1 - (nodeHeight / 2) * Math.sin(angle);
       
         // 4. 선 그리기 (출발점 중심에서 목적지 노드 경계까지)
-        group.line(destinationX, destinationY, centerX2, centerY2).stroke({ width: 1, color: 'gray' });
+        group.line(destinationX, destinationY, centerX2, centerY2)
+        .attr('style', `
+            stroke: var(--color-base-60);
+            stroke-width: 1;
+            `);
 
         // 5. 마름모 그리기
         const edgeLength = 12;  // 한 변의 길이
@@ -541,7 +556,11 @@ export default class ClassRelationMap {
 
         // 마름모 모양을 polygon으로 그리기
         group.polygon(`${topX},${topY} ${destinationX},${destinationY} ${bottomX},${bottomY} ${topX - diffX},${topY - diffY}`)
-            .fill((type == 1)? 'white' : 'gray');
+        .attr('style', `
+            fill: var(--color-base-${(type == 1)? '00' : '60'});
+            stroke: var(--color-base-60);
+            stroke-width: 2;
+            `);
             
         // 관계된 노드 이름 저장
         group.attr('data-src', srcNode.className).attr('data-dst', dstNode.className).back();

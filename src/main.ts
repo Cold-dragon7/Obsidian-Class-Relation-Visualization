@@ -15,8 +15,6 @@ export default class ClassRelationVisualizationPlugin extends Plugin {
 	settings: CRVPluginSettings;
 
 	async onload() {
-		await this.loadSettings();
-
 		this.registerView(
 			VIEW_TYPE_CRV,
 			(leaf) => new ClassRelationView(leaf)
@@ -24,7 +22,7 @@ export default class ClassRelationVisualizationPlugin extends Plugin {
 
 		this.addCommand({
 			id: 'open-class-relation-view',
-			name: 'Open Class Relation View',
+			name: 'Open class relation view',
 			callback: () => {
 				this.activateView();
 			}

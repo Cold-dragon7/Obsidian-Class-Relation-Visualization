@@ -21,7 +21,7 @@ export class ClassRelationView extends ItemView {
     }
   
     getDisplayText(): string {
-        return 'Class Relation View';
+        return 'Class relation view';
     }
   
     async onOpen() {
@@ -95,7 +95,7 @@ export class ClassRelationView extends ItemView {
                             inheritance = values;
                         else if(char == '합')
                             composition = values;
-                        else
+                        else if(char == '집')
                             aggregation = values;
                     }
                 }
