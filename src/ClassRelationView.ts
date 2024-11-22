@@ -75,6 +75,7 @@ export class ClassRelationView extends ItemView {
        // MDFiles.forEach(async file => {
        for(const file of MDFiles) {
             let className = file.basename;
+            let checkIsClass = 0;
             
             // 문자열 처리
             let fileStr = await this.app.vault.cachedRead(file);
@@ -85,6 +86,7 @@ export class ClassRelationView extends ItemView {
                 let char = line.charAt(0);
                 let relationArr = ['상', '합', '집'];
                 if(relationArr.includes(char)) {
+                    checkIsClass++;
                     let rawstr = line.slice(8);
                     let matches = rawstr.match(/\[\[(.*?)\]\]/g);       // 대괄호 안의 내용을 찾기
                     if(matches != null) {
@@ -111,7 +113,7 @@ export class ClassRelationView extends ItemView {
             });
             // 문자열 처리 end
             
-            if(this.classRelationMap != null)
+            if(this.classRelationMap != null && checkIsClass == 3)
                 this.classRelationMap.createNode(className, inheritance, composition, aggregation, comment, tag);
         }
         if(this.classRelationMap != null) {
