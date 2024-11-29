@@ -39,20 +39,11 @@ export class ClassRelationView extends ItemView {
             //let mapSize = this.classRelationMap.getMapSize();
             SVGContainer.size(6000, 6000);
             
-            this.classRelationMap.drawSVG();
+            requestAnimationFrame(() => {
+                if(this.classRelationMap instanceof ClassRelationMap)
+                    this.classRelationMap.drawSVG();
+            })
         }
-        // test용 코드
-        // SVGContainer.circle(100).fill('blue').center(150, 150);
-        // let text = SVGContainer.text("text").center(200, 200).fill('white');
-
-        // const MDFiles = this.app.vault.getMarkdownFiles();
-        // const fileName = MDFiles[0].name;
-        // let fileStr = this.app.vault.cachedRead(MDFiles[0]);
-        // let lines = (await fileStr).split('\n');
-        // let line1 = lines[0].slice(0, 5);
-
-        // text.text(line1);
-        
     }
   
     async onClose() {

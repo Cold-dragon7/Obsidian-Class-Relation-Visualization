@@ -337,8 +337,7 @@ export default class ClassRelationMap {
 
         const nodeGroup: SVG.G = this.SVGContainer.group();
 
-        const rect = nodeGroup.rect(nodeWidth, nodeHeight)
-            .move(x, y)
+        const rect = nodeGroup.rect(nodeWidth, nodeHeight).move(0, 0)
             .attr('style', `
                 fill: var(--color-base-40);
                 stroke: var(--color-base-60);
@@ -364,11 +363,11 @@ export default class ClassRelationMap {
             .font({size: 12, family: 'Arial'})
             .attr('style', 'fill: var(--text-normal);')
             .attr({ 'text-anchor': 'start', 'alignment-baseline': 'middle' });
-            
-        text.cx(rect.cx()).cy(rect.cy());
-
+            text.cx(nodeWidth/2).cy(nodeHeight/2);
         // 노드 이름 저장
-        nodeGroup.id(node.className);
+        nodeGroup.id(node.className).x(x).y(y);
+        
+        
 
         // 마우스 이벤트 등록
         nodeGroup.on('mouseenter', (event : MouseEvent) => {
