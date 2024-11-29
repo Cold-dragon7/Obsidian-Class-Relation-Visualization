@@ -83,19 +83,24 @@ export class ClassRelationView extends ItemView {
             let inheritance : string[] = [], composition : string[] = [], aggregation : string[] = [], comment : string = "", tag : string = "";
             
             lines.filter(line => line != "").forEach(line => {
-                let char = line.charAt(0);
-                let relationArr = ['상', '합', '집'];
-                if(relationArr.includes(char)) {
-                    checkIsClass++;
+                let char = line.charAt(0).toLowerCase();
+                let relationCharArr = ['상', 'i', '합', 'c', '집', 'a'];
+                if(relationCharArr.includes(char)) {
+
+                    let word = line.split(' ')[0].toLowerCase();
+                    let relationWordArr = ['상속', 'inheritance', '합성', 'composition', '집약', 'aggregation'];
+                    if(relationWordArr.includes(word))          // 단어로 검사해서 클래스 정보 파일인지 판별
+                        checkIsClass++;
+                    
                     let rawstr = line.slice(8);
                     let matches = rawstr.match(/\[\[(.*?)\]\]/g);       // 대괄호 안의 내용을 찾기
                     if(matches != null) {
                         let values = matches.map(match => match.replace(/\[\[|\]\]/g, ''));     // 대괄호 제거
-                        if(char == '상')
+                        if(relationWordArr.slice(0, 2).includes(word)) 
                             inheritance = values;
-                        else if(char == '합')
+                        else if(relationWordArr.slice(2, 4).includes(word))
                             composition = values;
-                        else if(char == '집')
+                        else if(relationWordArr.slice(4).includes(word))
                             aggregation = values;
                     }
                 }
