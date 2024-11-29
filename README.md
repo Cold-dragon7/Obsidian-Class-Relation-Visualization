@@ -6,7 +6,7 @@ You can visualize your classes and their inheritance, composition, aggregation r
 - 'Inheritance', 'Composition', 'Aggregation' categories for class relations. Relations consist of links to other class files.
 - '-' category for comment. Write a description of the class.
 
-![image](https://github.com/user-attachments/assets/b111e182-e666-4942-989b-f2813fd3d0ac)
+![image](https://github.com/user-attachments/assets/94d23364-5104-4558-a496-de32d3ea3e66)
 
 ---
 
