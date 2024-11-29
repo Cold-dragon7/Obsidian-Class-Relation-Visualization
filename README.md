@@ -3,10 +3,10 @@
 You can visualize your classes and their inheritance, composition, aggregation relation.
 
 ### 1. Make class files according to form
-- '상속 관계', '합성 관계', '집합 관계' categories for class relations. Relations consist of links to other class files.
+- 'Inheritance', 'Composition', 'Aggregation' categories for class relations. Relations consist of links to other class files.
 - '-' category for comment. Write a description of the class.
 
-![file1](https://github.com/user-attachments/assets/8e94be1a-d32f-41a2-be34-5f9de1e6ed44)
+![image](https://github.com/user-attachments/assets/b111e182-e666-4942-989b-f2813fd3d0ac)
 
 ---
 
