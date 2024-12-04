@@ -29,6 +29,4 @@ You can visualize your classes and their inheritance, composition, aggregation r
 - This plugin is in development. There may be unexpected outputs or bugs.
 - The bugs identified include:
 
-	The first time you run a command, the class name is weird. If you refresh, it will be normal.
-
 	The rhombic representation of the composition, aggregation relationship is often not on the line.
